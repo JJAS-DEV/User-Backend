@@ -97,7 +97,7 @@ public class UserController {
         Map<String, String> errors = new HashMap<>();
 
         result.getFieldErrors().forEach(error -> {
-            errors.put("el campo " + error.getField()," "+ error.getDefaultMessage());
+            errors.put( error.getField(), error.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors);
     }
