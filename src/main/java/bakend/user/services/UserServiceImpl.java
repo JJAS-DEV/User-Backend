@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +15,16 @@ import bakend.user.repositories.UserRepository;
 @Service
 public class UserServiceImpl implements UserServices {
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
@@ -28,7 +36,7 @@ public class UserServiceImpl implements UserServices {
     }
 
     @Override
-    @Transactional          
+    @Transactional
     public User save(User user) {
         return userRepository.save(user);
     }
@@ -38,7 +46,5 @@ public class UserServiceImpl implements UserServices {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
-
-   
 
 }
