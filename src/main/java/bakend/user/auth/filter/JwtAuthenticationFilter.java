@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
@@ -75,12 +76,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult
                 .getPrincipal();
         String username = user.getUsername();
-        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-        Claims claims = Jwts
-                .claims()
-                .add("authorities",new ObjectMapper()
-                .writeValueAsString(roles))
-                .add("username", username).build();
+     List<String> authorities = authResult.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .toList();
+        boolean isAdmin= authorities.stream().anyMatch(role-> role.equals("ROLE_ADMIN"));
+Claims claims = Jwts.claims()
+        .add("authorities", authorities) // 👈 solo strings
+        .add("username", username)
+        .add("isAdmin",isAdmin)
+        .build();
+
         String jwt = Jwts.builder()
                 .subject(username)
                 .claims(claims)
