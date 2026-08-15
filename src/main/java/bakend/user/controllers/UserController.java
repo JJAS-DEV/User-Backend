@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import bakend.user.entities.User;
+import bakend.user.models.UserRequest;
 import bakend.user.services.UserServices;
 import jakarta.validation.Valid;
 
@@ -69,22 +70,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody User entity, BindingResult result, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody UserRequest entity, BindingResult result, @PathVariable Long id) {
         if (result.hasErrors()) {
 
             return getErrors(result);
         }
 
-        Optional<User> userOptional = userService.findById(id);
+        Optional<User> userOptional = userService.update(entity,id);
         if (userOptional.isPresent()) {
-            User userToUpdate = userOptional.get();
-            userToUpdate.setName(entity.getName());
-            userToUpdate.setLastname(entity.getLastname());
-            userToUpdate.setEmail(entity.getEmail());
-            userToUpdate.setPassword(entity.getPassword());
-            userToUpdate.setUsername(entity.getUsername());
-            return ResponseEntity.ok(userService.save(userToUpdate));
+        
+            return ResponseEntity.ok(userService.save(userOptional.orElseThrow()));
+
         }
+        
         // TODO: process PUT request
         return ResponseEntity.status(404).body(Collections.singletonMap("message", "User not found with id: " + id));
 
