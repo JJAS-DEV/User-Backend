@@ -39,7 +39,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(authz ->
                      authz
                         .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/page/{page}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").hasAllRoles("ADMIN","USER")
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/users").hasRole("ADMIN")
@@ -63,7 +63,7 @@ public class SpringSecurityConfig {
         CorsConfigurationSource  configurationSource(){
             CorsConfiguration config= new CorsConfiguration();
             config.setAllowedOriginPatterns(Arrays.asList("*"));
-            config.setAllowedOrigins(Arrays.asList("http://localhost:4200/"));
+            config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
             config.setAllowedMethods(Arrays.asList("POST","GET","PUT", "DELETE"));
             config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 
