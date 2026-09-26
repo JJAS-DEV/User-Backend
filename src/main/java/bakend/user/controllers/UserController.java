@@ -75,13 +75,22 @@ public class UserController {
             return getErrors(result);
         }
 
-        Optional<User> userOptional = userService.update(entity,id);
-        if (userOptional.isPresent()) {
         
-            return ResponseEntity.ok(userService.save(userOptional.orElseThrow()));
+
+        Optional<User> userOptional = userService.findById(id);
+        if (userOptional.isPresent()) {
+            
+
+                    System.out.println(userOptional.get().isAdmin());
+                    System.out.println(entity.isAdmin());
+
+                Optional<User> save = userService.update(entity,id);
+
+            return ResponseEntity.ok(save);
 
         }
         
+        System.out.println(userOptional.get().isAdmin());
         // TODO: process PUT request
         return ResponseEntity.status(404).body(Collections.singletonMap("message", "User not found with id: " + id));
 

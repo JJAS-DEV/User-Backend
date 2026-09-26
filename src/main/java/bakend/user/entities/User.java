@@ -44,7 +44,6 @@ public class User implements IUser {
     @NotBlank
     private String password;
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean admin;
     
 

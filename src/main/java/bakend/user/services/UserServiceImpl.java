@@ -3,6 +3,8 @@ package bakend.user.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,16 +30,37 @@ public class UserServiceImpl implements UserServices {
     @Autowired
     private RoleRepository roleRepository;
 
+
     @Override
     @Transactional(readOnly = true)
     public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        return userRepository.findAll(pageable).map(
+            user->{
+                boolean admin=user.getRoles().stream().anyMatch(role-> "ROLE_ADMIN".equals(role.getName()));
+
+                user.setAdmin(admin);
+
+                return user;
+            }
+
+
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> findAllUsers() {
-        return userRepository.findAll();
+        return((List<User>)userRepository.findAll()).stream().map(
+            user->{
+                boolean admin=user.getRoles().stream().anyMatch(role-> "ROLE_ADMIN".equals(role.getName()));
+
+                user.setAdmin(admin);
+
+                return user;
+            }
+
+
+        ).collect(Collectors.toList());
     }
 
     @Override
@@ -63,6 +86,7 @@ public class UserServiceImpl implements UserServices {
 
     public Optional<User> update(UserRequest user, Long id) {
         Optional<User> userOptional = userRepository.findById(id);
+        System.out.println("aplicacion= "+user.isAdmin());
         if (userOptional.isPresent()) {
             User userToUpdate = userOptional.get();
             userToUpdate.setName(user.getName());
@@ -88,11 +112,13 @@ public class UserServiceImpl implements UserServices {
         List<Role> roles = new ArrayList<>();
         Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
         optionalRoleUser.ifPresent(roles::add);
-
+            System.out.println("optional="+ user.isAdmin());
         if (user.isAdmin()) {
+
             Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
             optionalRoleAdmin.ifPresent(roles::add);
         }
+        roles.forEach(r -> System.out.println("Rol: " + r.getName()));
         return roles;
     }
 
